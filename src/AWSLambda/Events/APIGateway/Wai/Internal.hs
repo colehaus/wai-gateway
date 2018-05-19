@@ -8,6 +8,7 @@ import qualified AWSLambda.Events.APIGateway as AWS
 import Control.Lens
 import qualified Data.Aeson.TextValue as Aeson
 import Data.ByteString (ByteString, intercalate)
+import qualified Data.ByteString as BS
 import Data.ByteString.Builder (toLazyByteString)
 import qualified Data.ByteString.Lazy as Lazy
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef, writeIORef)
@@ -51,12 +52,13 @@ toWaiRequest f first req = Wai.Request {..}
         443
         (req ^. agprqRequestContext . prcIdentity . riSourceIp .
          to Net.tupleToHostAddress)
-    pathInfo = req ^. agprqPath . to (splitOn "/" . decodeUtf8)
+    pathInfo = req ^. agprqPath . to (tail . splitOn "/" . decodeUtf8)
     queryString = req ^. agprqQueryStringParameters
     requestBody' = req ^? AWS.requestBody . _Just . to f
     requestBody = yieldOnce (fromMaybe mempty requestBody') first
     vault = mempty
-    requestBodyLength = Wai.KnownLength . fromIntegral . length $ requestBody'
+    requestBodyLength =
+      Wai.KnownLength . maybe 0 (fromIntegral . BS.length) $ requestBody'
     requestHeaderHost = req ^. agprqHeaders . to (lookup "Host")
     requestHeaderRange = req ^. agprqHeaders . to (lookup "Range")
     requestHeaderReferer = req ^. agprqHeaders . to (lookup "Referer")
