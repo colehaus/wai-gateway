@@ -1,0 +1,24 @@
+service: wai-gateway
+provider:
+  name: aws
+  runtime: nodejs6.10
+functions:
+  entry:
+    handler:
+      wai-gateway.wai-gateway-exe
+    events:
+      - http:
+          path: /echo
+          method: ANY
+plugins:
+  - serverless-haskell
+package:
+  exclude:
+    - app/**
+    - dist/**
+    - result/**
+    - src/**
+    - test/**
+custom:
+  haskell:
+    docker: true

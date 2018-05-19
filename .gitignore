@@ -1,0 +1,6 @@
+.stack-work/
+.serverless/
+dist/
+node_modules/
+result
+*~
