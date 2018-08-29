@@ -1,11 +1,11 @@
 resolver: lts-11.9
 packages:
 - .
-- ../serverless-haskell
 extra-deps:
-  - amazonka-core-1.6.0
-  - amazonka-kinesis-1.6.0
-  - amazonka-s3-1.6.0
+- serverless-haskell-0.6.1
+- amazonka-core-1.6.0
+- amazonka-kinesis-1.6.0
+- amazonka-s3-1.6.0
 nix:
   packages:
     - zlib.dev

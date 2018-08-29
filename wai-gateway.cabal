@@ -30,6 +30,7 @@ library
       base >=4.7 && <5
     , bytestring
     , http-types
+    , iproute
     , lens
     , network
     , serverless-haskell

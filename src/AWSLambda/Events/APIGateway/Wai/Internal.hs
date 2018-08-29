@@ -12,7 +12,8 @@ import qualified Data.ByteString as BS
 import Data.ByteString.Builder (toLazyByteString)
 import qualified Data.ByteString.Lazy as Lazy
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef, writeIORef)
-import Data.Maybe (fromMaybe)
+import Data.IP (toHostAddress)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.Semigroup ((<>))
 import Data.Text (splitOn)
 import Data.Text.Encoding (decodeUtf8)
@@ -50,8 +51,8 @@ toWaiRequest f first req = Wai.Request {..}
     remoteHost =
       Net.SockAddrInet
         443
-        (req ^. agprqRequestContext . prcIdentity . riSourceIp .
-         to Net.tupleToHostAddress)
+        (toHostAddress $ read . show $
+         fromJust $ req ^. agprqRequestContext . prcIdentity . riSourceIp)
     pathInfo = req ^. agprqPath . to (tail . splitOn "/" . decodeUtf8)
     queryString = req ^. agprqQueryStringParameters
     requestBody' = req ^? AWS.requestBody . _Just . to f
