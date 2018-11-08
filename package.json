@@ -2,7 +2,7 @@
   "name": "serverless-test",
   "version": "1.0.0",
   "devDependencies": {
-    "serverless": "^1.27.2",
-    "serverless-haskell": "^0.4.3"
+    "serverless": "^1.32.0",
+    "serverless-haskell": "^0.6.7"
   }
 }

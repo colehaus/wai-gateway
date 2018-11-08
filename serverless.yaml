@@ -1,7 +1,7 @@
 service: wai-gateway
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: haskell
 functions:
   entry:
     handler:
