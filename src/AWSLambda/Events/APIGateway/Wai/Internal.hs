@@ -12,6 +12,8 @@ import qualified Data.ByteString as BS
 import Data.ByteString.Builder (toLazyByteString)
 import qualified Data.ByteString.Lazy as Lazy
 import Data.IORef (IORef, modifyIORef', newIORef, readIORef, writeIORef)
+import Data.IP (IP(..))
+import Data.IP as IP
 import Data.Maybe (fromMaybe)
 import Data.Semigroup ((<>))
 import Data.Text (splitOn)
@@ -46,7 +48,6 @@ toWaiRequest f first req = Wai.Request {..}
         toParamString (l, Just r) = l <> "=" <> r
     requestHeaders = req ^. agprqHeaders
     isSecure = True
-    pathInfo = req ^. agprqPath . to (tail . splitOn "/" . decodeUtf8)
     -- 443 is actually the destination port, not the source port. But Amazon doesn't provide the source port so, unfortunately, we just jam garbage data in.
     remoteHost = Net.SockAddrInet 443 hostAddress
       where
@@ -55,6 +56,7 @@ toWaiRequest f first req = Wai.Request {..}
             Just (IPv4 ip) -> IP.toHostAddress ip
             Just (IPv6 ip) -> error $ "Expecting IPv4 but got IPv6: " <> show ip
             Nothing -> error "Expecting IP address but got nothing"
+    pathInfo = req ^. agprqPath . to HTTP.decodePathSegments
     queryString = req ^. agprqQueryStringParameters
     requestBody' = req ^? AWS.requestBody . _Just . to f
     requestBody = yieldOnce (fromMaybe mempty requestBody') first
